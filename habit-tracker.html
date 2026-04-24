@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GROUNDWORK — Goals & Habits</title>
+<meta name="theme-color" content="#d4842a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GROUNDWORK">
+<link rel="manifest" id="pwaManifest">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --surface: #1a1814;
+    --surface2: #232018;
+    --border: #3a3428;
+    --accent: #d4842a;
+    --accent2: #e8b84b;
+    --danger: #c0392b;
+    --success: #2ecc71;
+    --text: #e8e0d0;
+    --muted: #7a6e5e;
+    --faint: #2a2520;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  header {
+    border-bottom: 2px solid var(--accent);
+    padding: 18px 24px 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 4px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  header .tagline {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .date-display {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .tab-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    font-size: 1rem;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    color: var(--accent2);
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1.5px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn:hover { background: var(--accent); color: var(--bg); }
+
+  .btn-danger { border-color: var(--danger); color: var(--danger); }
+  .btn-danger:hover { background: var(--danger); color: #fff; }
+
+  .btn-sm { padding: 4px 10px; font-size: 0.65rem; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    padding: 28px;
+    width: min(480px, 95vw);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 3px;
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-group label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--accent); }
+
+  .form-group textarea { resize: vertical; min-height: 70px; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* GOALS */
+  .goal-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-left: 4px solid var(--accent);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s;
+  }
+
+  .goal-card.done { border-left-color: var(--success); opacity: 0.7; }
+
+  .goal-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .goal-checkbox {
+    width: 20px; height: 20px;
+    border: 2px solid var(--accent);
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    transition: all 0.15s;
+  }
+
+  .goal-checkbox.checked {
+    background: var(--success);
+    border-color: var(--success);
+  }
+
+  .goal-checkbox.checked::after { content: '✓'; font-size: 0.75rem; color: #fff; }
+
+  .goal-info { flex: 1; min-width: 0; }
+
+  .goal-name {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .goal-name.done { text-decoration: line-through; color: var(--muted); }
+
+  .goal-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .goal-meta .cat-badge {
+    background: var(--faint);
+    border: 1px solid var(--border);
+    color: var(--accent2);
+    padding: 2px 8px;
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+  }
+
+  .goal-notes {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 8px;
+    border-top: 1px solid var(--faint);
+    padding-top: 8px;
+    font-style: italic;
+  }
+
+  .progress-wrap {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--faint);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s;
+  }
+
+  .progress-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+
+  .goal-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  /* PROGRESS INPUT */
+  .progress-inline {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .progress-inline input[type=range] {
+    flex: 1;
+    accent-color: var(--accent);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  /* HABITS */
+  .habit-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .habit-streak {
+    text-align: center;
+    min-width: 48px;
+  }
+
+  .streak-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .streak-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .habit-info { flex: 1; min-width: 0; }
+
+  .habit-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+
+  .habit-freq {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* Dot grid for last 14 days */
+  .dot-grid {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .dot {
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+  }
+
+  .dot.done { background: var(--accent); border-color: var(--accent); }
+  .dot.today { border-color: var(--accent2); }
+
+  .habit-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .check-today-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    font-size: 0.95rem;
+    padding: 8px 14px;
+    border: 2px solid var(--accent);
+    background: none;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .check-today-btn:hover,
+  .check-today-btn.checked-today {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .check-today-btn.checked-today { cursor: default; }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .stat-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    border: 1.5px dashed var(--border);
+  }
+
+  /* Category filter */
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .filter-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  @media (max-width: 520px) {
+    header h1 { font-size: 1.7rem; }
+    .habit-card { flex-wrap: wrap; }
+    .habit-right { flex-direction: row; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>GROUNDWORK</h1>
+  <span class="tagline">Goals & Habits</span>
+  <div class="date-display" id="dateDisplay"></div>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('goals')">Goals</button>
+    <button class="tab-btn" onclick="switchTab('habits')">Daily Habits</button>
+    <button class="tab-btn" onclick="switchTab('stats')">Stats</button>
+  </div>
+
+  <!-- GOALS TAB -->
+  <div class="tab-panel active" id="tab-goals">
+    <div class="section-header">
+      <span class="section-title">Goals</span>
+      <button class="btn" onclick="openGoalModal()">+ Add Goal</button>
+    </div>
+
+    <div class="filter-row" id="goalFilters"></div>
+    <div id="goalList"></div>
+  </div>
+
+  <!-- HABITS TAB -->
+  <div class="tab-panel" id="tab-habits">
+    <div class="section-header">
+      <span class="section-title">Daily Habits</span>
+      <button class="btn" onclick="openHabitModal()">+ Add Habit</button>
+    </div>
+    <div id="habitList"></div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div class="tab-panel" id="tab-stats">
+    <div class="section-title" style="margin-bottom:20px;">Overview</div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="section-title" style="margin-bottom:16px;margin-top:8px;">Habit Performance (Last 14 Days)</div>
+    <div id="habitStats"></div>
+  </div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="modal-overlay" id="goalModal">
+  <div class="modal">
+    <h2 id="goalModalTitle">New Goal</h2>
+    <div class="form-group">
+      <label>Goal Name *</label>
+      <input type="text" id="goalName" placeholder="e.g. Get Part 107 License" maxlength="80">
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="goalCat">
+        <option value="Work">Work</option>
+        <option value="Health">Health</option>
+        <option value="Finance">Finance</option>
+        <option value="Skills">Skills</option>
+        <option value="Personal">Personal</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Target Date</label>
+      <input type="date" id="goalDate">
+    </div>
+    <div class="form-group">
+      <label>Notes / Why This Matters</label>
+      <textarea id="goalNotes" placeholder="What's the motivation? What does success look like?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" onclick="closeGoalModal()">Cancel</button>
+      <button class="btn" onclick="saveGoal()">Save Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- HABIT MODAL -->
+<div class="modal-overlay" id="habitModal">
+  <div class="modal">
+    <h2>New Habit</h2>
+    <div class="form-group">
+      <label>Habit Name *</label>
+      <input type="text" id="habitName" placeholder="e.g. Study for Part 107" maxlength="80">
+    </div>
+    <div class="form-group">
+      <label>Frequency</label>
+      <select id="habitFreq">
+        <option value="Daily">Daily</option>
+        <option value="Weekdays">Weekdays (Mon–Fri)</option>
+        <option value="Custom">Custom (just track manually)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <input type="text" id="habitNotes" placeholder="Optional details" maxlength="120">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" onclick="closeHabitModal()">Cancel</button>
+      <button class="btn" onclick="saveHabit()">Save Habit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA LAYER ──────────────────────────────────────────────
+const KEYS = { goals: 'gw_goals', habits: 'gw_habits', checks: 'gw_checks' };
+
+function load(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || []; }
+  catch { return []; }
+}
+function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+let goals  = load(KEYS.goals);
+let habits = load(KEYS.habits);
+let checks = load(KEYS.checks); // [{habitId, date}]
+
+// Fallback sample data for first run
+if (!goals.length && !habits.length) {
+  const today = fmtDate(new Date());
+  goals = [
+    { id: uid(), name: 'Get FAA Part 107 License', cat: 'Skills', date: '2026-09-01', notes: 'Required to legally fly commercially for Desert Hills Aerial.', progress: 20, done: false, created: today },
+    { id: uid(), name: 'First Paid Drone Job', cat: 'Work', date: '2026-10-01', notes: 'Real estate shoot or construction doc in Taos/Santa Fe.', progress: 5, done: false, created: today },
+    { id: uid(), name: 'Pass CDL Test', cat: 'Skills', date: '2026-05-01', notes: 'Test next Saturday — need to review pre-trip and air brakes.', progress: 80, done: false, created: today },
+  ];
+  habits = [
+    { id: uid(), name: 'Study Part 107 material', freq: 'Daily', notes: '30 min minimum', created: today },
+    { id: uid(), name: 'Physical activity / workout', freq: 'Daily', notes: '', created: today },
+  ];
+  save(KEYS.goals, goals);
+  save(KEYS.habits, habits);
+}
+
+// ─── UTILS ───────────────────────────────────────────────────
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function fmtDate(d) { return d.toISOString().slice(0,10); }
+const TODAY = fmtDate(new Date());
+
+function todayLabel() {
+  return new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+}
+
+// ─── TABS ────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['goals','habits','stats'][i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name === 'stats') renderStats();
+}
+
+// ─── GOAL MODAL ──────────────────────────────────────────────
+let editingGoalId = null;
+
+function openGoalModal(id) {
+  editingGoalId = id || null;
+  const g = id ? goals.find(x => x.id === id) : null;
+  document.getElementById('goalModalTitle').textContent = id ? 'Edit Goal' : 'New Goal';
+  document.getElementById('goalName').value  = g ? g.name  : '';
+  document.getElementById('goalCat').value   = g ? g.cat   : 'Work';
+  document.getElementById('goalDate').value  = g ? g.date  : '';
+  document.getElementById('goalNotes').value = g ? g.notes : '';
+  document.getElementById('goalModal').classList.add('open');
+}
+
+function closeGoalModal() { document.getElementById('goalModal').classList.remove('open'); }
+
+function saveGoal() {
+  const name = document.getElementById('goalName').value.trim();
+  if (!name) return alert('Goal name required.');
+  if (editingGoalId) {
+    const g = goals.find(x => x.id === editingGoalId);
+    g.name = name;
+    g.cat  = document.getElementById('goalCat').value;
+    g.date = document.getElementById('goalDate').value;
+    g.notes= document.getElementById('goalNotes').value.trim();
+  } else {
+    goals.push({ id: uid(), name, cat: document.getElementById('goalCat').value,
+      date: document.getElementById('goalDate').value,
+      notes: document.getElementById('goalNotes').value.trim(),
+      progress: 0, done: false, created: TODAY });
+  }
+  save(KEYS.goals, goals);
+  closeGoalModal();
+  renderGoals();
+}
+
+function deleteGoal(id) {
+  if (!confirm('Delete this goal?')) return;
+  goals = goals.filter(g => g.id !== id);
+  save(KEYS.goals, goals);
+  renderGoals();
+}
+
+function toggleGoalDone(id) {
+  const g = goals.find(x => x.id === id);
+  g.done = !g.done;
+  if (g.done) g.progress = 100;
+  save(KEYS.goals, goals);
+  renderGoals();
+}
+
+function setProgress(id, val) {
+  const g = goals.find(x => x.id === id);
+  g.progress = parseInt(val);
+  document.getElementById('plbl-'+id).textContent = val + '%';
+  save(KEYS.goals, goals);
+}
+
+// ─── GOAL RENDER ─────────────────────────────────────────────
+let activeFilter = 'All';
+
+function renderGoals() {
+  // Build filter buttons
+  const cats = ['All', ...new Set(goals.map(g => g.cat))];
+  const fr = document.getElementById('goalFilters');
+  fr.innerHTML = cats.map(c => `
+    <button class="filter-btn ${c===activeFilter?'active':''}" onclick="setFilter('${c}')">${c}</button>
+  `).join('');
+
+  const filtered = activeFilter === 'All' ? goals : goals.filter(g => g.cat === activeFilter);
+  const active = filtered.filter(g => !g.done);
+  const done   = filtered.filter(g => g.done);
+  const ordered = [...active, ...done];
+
+  const list = document.getElementById('goalList');
+  if (!ordered.length) {
+    list.innerHTML = '<div class="empty-state">No goals yet. Add your first one ↑</div>';
+    return;
+  }
+
+  list.innerHTML = ordered.map(g => {
+    const daysLeft = g.date ? Math.ceil((new Date(g.date+'T12:00:00') - new Date()) / 86400000) : null;
+    const deadline = daysLeft !== null
+      ? `<span>${daysLeft > 0 ? daysLeft+' days left' : daysLeft===0 ? 'DUE TODAY' : Math.abs(daysLeft)+' days overdue'}</span>`
+      : '';
+    return `
+      <div class="goal-card ${g.done?'done':''}">
+        <div class="goal-card-top">
+          <div class="goal-checkbox ${g.done?'checked':''}" onclick="toggleGoalDone('${g.id}')"></div>
+          <div class="goal-info">
+            <div class="goal-name ${g.done?'done':''}">${g.name}</div>
+            <div class="goal-meta">
+              <span class="cat-badge">${g.cat}</span>
+              ${g.date ? `<span>📅 ${g.date}</span>` : ''}
+              ${deadline}
+            </div>
+          </div>
+        </div>
+        ${g.notes ? `<div class="goal-notes">${g.notes}</div>` : ''}
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%"></div></div>
+          <span class="progress-label" id="plbl-${g.id}">${g.progress}%</span>
+        </div>
+        ${!g.done ? `
+        <div class="progress-inline">
+          <span style="font-family:IBM Plex Mono,monospace;font-size:0.65rem;color:var(--muted)">PROGRESS</span>
+          <input type="range" min="0" max="100" step="5" value="${g.progress}"
+            oninput="setProgress('${g.id}', this.value)"
+            onchange="renderGoals()">
+        </div>` : ''}
+        <div class="goal-actions">
+          <button class="btn btn-sm" onclick="openGoalModal('${g.id}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteGoal('${g.id}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setFilter(cat) { activeFilter = cat; renderGoals(); }
+
+// ─── HABIT MODAL ─────────────────────────────────────────────
+function openHabitModal() { document.getElementById('habitModal').classList.add('open'); }
+function closeHabitModal() {
+  document.getElementById('habitModal').classList.remove('open');
+  document.getElementById('habitName').value = '';
+  document.getElementById('habitNotes').value = '';
+}
+
+function saveHabit() {
+  const name = document.getElementById('habitName').value.trim();
+  if (!name) return alert('Habit name required.');
+  habits.push({ id: uid(), name, freq: document.getElementById('habitFreq').value,
+    notes: document.getElementById('habitNotes').value.trim(), created: TODAY });
+  save(KEYS.habits, habits);
+  closeHabitModal();
+  renderHabits();
+}
+
+function deleteHabit(id) {
+  if (!confirm('Delete this habit and all its history?')) return;
+  habits = habits.filter(h => h.id !== id);
+  checks = checks.filter(c => c.habitId !== id);
+  save(KEYS.habits, habits);
+  save(KEYS.checks, checks);
+  renderHabits();
+}
+
+function checkToday(id) {
+  const already = checks.find(c => c.habitId === id && c.date === TODAY);
+  if (already) return;
+  checks.push({ habitId: id, date: TODAY });
+  save(KEYS.checks, checks);
+  renderHabits();
+}
+
+function getStreak(id) {
+  const dates = checks.filter(c => c.habitId === id).map(c => c.date).sort().reverse();
+  if (!dates.length) return 0;
+  let streak = 0, cur = new Date();
+  // If not checked today, start from yesterday
+  if (dates[0] !== TODAY) cur.setDate(cur.getDate()-1);
+  while (true) {
+    const d = fmtDate(cur);
+    if (dates.includes(d)) { streak++; cur.setDate(cur.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+function getLast14(id) {
+  const result = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    result.push({ date: fmtDate(d), done: checks.some(c => c.habitId===id && c.date===fmtDate(d)), today: i===0 });
+  }
+  return result;
+}
+
+// ─── HABIT RENDER ─────────────────────────────────────────────
+function renderHabits() {
+  const list = document.getElementById('habitList');
+  if (!habits.length) {
+    list.innerHTML = '<div class="empty-state">No habits yet. Add your first one ↑</div>';
+    return;
+  }
+  list.innerHTML = habits.map(h => {
+    const streak = getStreak(h.id);
+    const last14 = getLast14(h.id);
+    const checkedToday = checks.some(c => c.habitId===h.id && c.date===TODAY);
+    return `
+      <div class="habit-card">
+        <div class="habit-streak">
+          <div class="streak-num">${streak}</div>
+          <div class="streak-lbl">streak</div>
+        </div>
+        <div class="habit-info">
+          <div class="habit-name">${h.name}</div>
+          <div class="habit-freq">${h.freq}${h.notes ? ' · '+h.notes : ''}</div>
+          <div class="dot-grid">
+            ${last14.map(d => `<div class="dot ${d.done?'done':''} ${d.today?'today':''}"></div>`).join('')}
+          </div>
+        </div>
+        <div class="habit-right">
+          <button class="check-today-btn ${checkedToday?'checked-today':''}"
+            onclick="${checkedToday ? '' : `checkToday('${h.id}')`}">
+            ${checkedToday ? '✓ Done' : 'Mark Done'}
+          </button>
+          <button class="btn btn-sm btn-danger" onclick="deleteHabit('${h.id}')">Del</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── STATS ───────────────────────────────────────────────────
+function renderStats() {
+  const total = goals.length;
+  const done  = goals.filter(g => g.done).length;
+  const avgProg = total ? Math.round(goals.reduce((a,g)=>a+g.progress,0)/total) : 0;
+  const totalChecks = checks.filter(c => c.date === TODAY).length;
+  const bestStreak = habits.length ? Math.max(...habits.map(h => getStreak(h.id))) : 0;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Goals Set</div></div>
+    <div class="stat-box"><div class="stat-num">${done}</div><div class="stat-lbl">Goals Done</div></div>
+    <div class="stat-box"><div class="stat-num">${avgProg}%</div><div class="stat-lbl">Avg Progress</div></div>
+    <div class="stat-box"><div class="stat-num">${habits.length}</div><div class="stat-lbl">Active Habits</div></div>
+    <div class="stat-box"><div class="stat-num">${totalChecks}</div><div class="stat-lbl">Habits Done Today</div></div>
+    <div class="stat-box"><div class="stat-num">${bestStreak}</div><div class="stat-lbl">Best Streak</div></div>
+  `;
+
+  if (!habits.length) {
+    document.getElementById('habitStats').innerHTML = '<div class="empty-state">No habits tracked yet.</div>';
+    return;
+  }
+
+  document.getElementById('habitStats').innerHTML = habits.map(h => {
+    const c14 = getLast14(h.id).filter(d => d.done).length;
+    const pct = Math.round((c14/14)*100);
+    return `
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <span style="font-size:0.88rem;font-weight:600">${h.name}</span>
+          <span style="font-family:IBM Plex Mono,monospace;font-size:0.68rem;color:var(--accent2)">${c14}/14 days · ${pct}%</span>
+        </div>
+        <div class="progress-bar" style="height:8px">
+          <div class="progress-fill" style="width:${pct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+document.getElementById('dateDisplay').textContent = todayLabel();
+renderGoals();
+renderHabits();
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+// ─── PWA SETUP ───────────────────────────────────────────────
+const manifest = {
+  name: "GROUNDWORK — Goals & Habits",
+  short_name: "GROUNDWORK",
+  start_url: ".",
+  display: "standalone",
+  background_color: "#0f0e0c",
+  theme_color: "#d4842a",
+  description: "Track your goals and daily habits.",
+  icons: [{
+    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230f0e0c'/%3E%3Crect x='40' y='230' width='432' height='52' fill='%23d4842a'/%3E%3Crect x='230' y='40' width='52' height='432' fill='%23d4842a'/%3E%3C/svg%3E",
+    sizes: "512x512", type: "image/svg+xml", purpose: "any maskable"
+  }]
+};
+const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+document.getElementById('pwaManifest').href = URL.createObjectURL(mBlob);
+
+if ('serviceWorker' in navigator) {
+  const swCode = `const C='gw-v1';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll([self.location.href]))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+  const swBlob = new Blob([swCode], {type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#d4842a;color:#0f0e0c;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;font-family:IBM Plex Mono,monospace;font-size:0.78rem;font-weight:600;letter-spacing:1px;z-index:9999;';
+  banner.innerHTML = `<span>INSTALL AS APP</span><button onclick="installApp()" style="background:#0f0e0c;color:#d4842a;border:none;padding:8px 16px;font-family:IBM Plex Mono,monospace;font-size:0.75rem;font-weight:600;cursor:pointer;">INSTALL</button><button onclick="document.getElementById('installBanner').remove()" style="background:none;border:none;color:#0f0e0c;font-size:1.3rem;cursor:pointer;padding:0 6px;">✕</button>`;
+  document.body.appendChild(banner);
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; const b = document.getElementById('installBanner'); if(b) b.remove(); });
+  }
+}
+</script>
+</body>
+</html>
